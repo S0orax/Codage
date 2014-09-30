@@ -1,0 +1,6 @@
+1. La commande iconv
+	
+	Question 2 :
+	
+	La différence est dût à la façon dont sont codé les caractères dans ces différents encodages. En ISO-8859-1 les charactères sont codé sur un octets, alors qu'un caractère en UTF-8 peut être codé sur 4 octets soit sur 21 bits (car des bits sont réservés pour le format UTF-8)
+
