@@ -7,6 +7,11 @@
 	1100000010000000 or ((e >> 6) << 8) or (e and 0b00111111)
 *)
 
+(*
+	isoToUtf -> int -> (int * int)
+	Code un octet codé en ISO-8859-1 en UTF-8
+	CU : 160 <= e <= 255
+*)
 let isoToUtf e =
 	((e lsr 6) lor 0b11000000, (e lxor 0b11000000) lor 0b10000000)
 		
@@ -28,6 +33,11 @@ let isolatin_en_utf8 source cible =
 			close_in entree;
 			close_out sortie
 
+(*
+	utfToIso -> int * int -> int
+	Code un couple d'octet en UTF-8 en un octet codé sous la norme ISO-8859-1
+	CU : o doit être de la forme (0b110xxxxx, 0b10xxxxxx)
+*)
 let utfToIso o =
 	let fort = (fst o) land 0b00000011 lsl 6
 	and faible = (snd o) land 0b00111111 in
