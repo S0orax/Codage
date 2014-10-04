@@ -8,22 +8,23 @@
 *)
 
 let isoToUtf e =
-	let utf = (0b1100000010000000) in
 	if e < 160 then 
-		e
+		(0, e)
 	else 
-	begin
-		let calcul = ((e lsr 6) lsl 8) lor (e land 0b00111111) in
-		utf lor calcul
-	end;;
-	
+		((e lsr 6) lor 0b11000000, (e lxor 0b11000000) lor 0b10000000)
+		
 let isolation_en_utf8 source cible =
 	let entree = open_in source
 	and sortie = open_out cible in
 	try
 		while true do
-			let octet1 = input_byte entree in
-			output_byte sortie (isoToUtf octet1)
+			let octet = input_byte entree in
+			if octet < 160 then
+				output_byte sortie (snd (isoToUtf octet))
+			else begin
+				output_byte sortie (fst (isoToUtf octet));
+				output_byte sortie (snd (isoToUtf octet))
+			end;
 		done
 	with
 		End_of_file ->
