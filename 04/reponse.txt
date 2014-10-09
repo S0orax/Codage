@@ -1,0 +1,86 @@
+Dubois Yann
+TP04
+
+I Le codage base 64
+
+I.1 Principe de codage
+
+A partir de n'importe quel codage (ASCII, UTF-8, ISO-8859-1, etc...),
+ce codage permet de rendre les caractères spéciaux (comme le caractère
+"é") d'être codé sur des caractères imprimable en ASCII. L'avantage de 
+ce code est que nous pouvons transmettre des donné plus complexe que
+du texte, par exemple un image qui utilise un codage particulié et ainsi
+d'être compréhensible par tous après le décodage.
+
+On utilise un ensemble de mots de 6 bits appelé sextets et on se contente
+de réécrire les donnés du fichiers en prenant maintenant en compte que nous
+n'utiliserons que dorrénavant des sextets
+
+Cela pause problème dans certain cas. On peut avoir un fichier de longueur
+6k bits ou k est un nombre entier positif, dans ce cas, il n'y a pas de problème. 
+On peut aussi avoir le cas ou le fichier à une longueur de 6k + 2 bits, alors, on
+ajoute 4 bits de poids faible à valeur 0. Puis on indique que l'on a ces 4 bits avec
+==. Le dernier cas est lorsque le fichier est de longueur 6k + 4 bits, on fait alors
+la même chose à l'exception que l'ont ajoute 4 bits de poids faible à valeur 0 et à
+la place de "==", on n'indique qu'un seul "="
+
+I.2 L'utilitaire base64
+
+Question 1 :
+
+dubois@115p15:~/Codage/TP/04$ base64 cigale-ISO-8859-1.txt 
+TGEgQ2lnYWxlIGV0IGxhIEZvdXJtaQoKTGEgQ2lnYWxlLCBheWFudCBjaGFudOkKVG91dCBsJ+l0
+6SwKU2UgdHJvdXZhIGZvcnQgZOlwb3VydnVlClF1YW5kIGxhIGJpc2UgZnV0IHZlbnVlIDoKUGFz
+IHVuIHNldWwgcGV0aXQgbW9yY2VhdQpEZSBtb3VjaGUgb3UgZGUgdmVybWlzc2VhdS4KRWxsZSBh
+bGxhIGNyaWVyIGZhbWluZQpDaGV6IGxhIEZvdXJtaSBzYSB2b2lzaW5lLApMYSBwcmlhbnQgZGUg
+bHVpIHBy6nRlcgpRdWVscXVlIGdyYWluIHBvdXIgc3Vic2lzdGVyCkp1c3F1J+AgbGEgc2Fpc29u
+IG5vdXZlbGxlLgpKZSB2b3VzIHBhaWVyYWksIGx1aSBkaXQtZWxsZSwKQXZhbnQgbCdP+3QsIGZv
+aSBkJ2FuaW1hbCwKSW506XLqdCBldCBwcmluY2lwYWwuIApMYSBGb3VybWkgbidlc3QgcGFzIHBy
+6nRldXNlIDoKQydlc3QgbOAgc29uIG1vaW5kcmUgZOlmYXV0LgpRdWUgZmFpc2llei12b3VzIGF1
+IHRlbXBzIGNoYXVkID8KRGl0LWVsbGUg4CBjZXR0ZSBlbXBydW50ZXVzZS4KTnVpdCBldCBqb3Vy
+IOAgdG91dCB2ZW5hbnQKSmUgY2hhbnRhaXMsIG5lIHZvdXMgZOlwbGFpc2UuClZvdXMgY2hhbnRp
+ZXogPyBqJ2VuIHN1aXMgZm9ydCBhaXNlLgpFaCBiaWVuISBkYW5zZXogbWFpbnRlbmFudC4K
+
+dubois@115p15:~/Codage/TP/04$ base64 test.txt 
+dGVzdAo=
+
+dubois@115p15:~/Codage/TP/04$ base64 codages.txt
+Y29kYWdlCg==
+
+Question 2 :
+
+"==" implique 4 bits de poids faibles à valeur 0
+On a donc 6 * x + 4 bits donc on a (6 * (6 * x + 4) / 8) octets
+
+"=" implique 4 bits de poids faibles à valeur 0
+On a donc 6 * x + 2 bits donc on a (6 * (6 * x + 2) / 8) octets
+
+Question 3 :
+
+Lorque l'ont a 1 "=", on remarque que la différence de taille entre les deux 
+fichier est de 4 octets. Quand on a 2 "=", la différence est de 6 octets
+
+Pour comprendre pourquoi, on utilise la commande :
+
+file <nomdufichier>
+
+On se rend compte que les fichier résultant de l'utilitaire base64 sont en ASCII
+Ce qui implique qu'après avoir utiliser cette utilitaire, les caractères
+résultant de l'utilitaire sont réencodé sur des octets. Quand on prend un nombre
+d'octets par exemple 4 octets, lorsque l'ont code sur des sextets, on obtient dans
+cet exemple 8 * 4 = 32 bits donc 6 * 5 + 2 bits, ce qui implique 6 sextets et un ajout
+de 4 bits. Dans notre fichier nous aurons alors 6 caractères plus deux à cause du "=".
+La taille du fichier sera alors de 6 octets, alors que le fichier de base était de 4
+octets.
+
+En généralisant on a :
+
+8 * x bits
+-> Si 8 * x modulo 6 = 0
+6 * (8 / x)
+
+-> Si 8 * x modulo 6 = 2
+6 * (8 / x) + 4 bits donc 2 "=", on ajoute alors 2 octets
+
+-> Si 8 * x modulo 6 = 4
+6 * (8 / x) + 2 bits donc 1 "=" on ajoute alors 1 octets
