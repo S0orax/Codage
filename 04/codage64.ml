@@ -20,37 +20,43 @@ table.(42);;
 table.(36);;
 *)
 
+let reinit_tab t =
+	t.(0) <- -1;
+	t.(1) <- -1;
+	t.(2) <- -1
+
 let octet_en_sextet t = 
-	let tab = [|' '; ' '; ' '; ' '|] in
+	let tab = [|'='; '='; '='; '=';|] in
 	match t with
 	|[|_; -1; -1|] -> tab.(0) <- table.(t.(0) lsr 2); 
-				tab.(1) <- table.(t.(0) land 0b00000011 lsl 6);
-				tab.(2) <- '='; 
-				tab.(3) <- '=';
+				tab.(1) <- table.((t.(0) land 0b11) lsl 4);
 				tab
 	|[|_; _; -1|] -> tab.(0) <- table.(t.(0) lsr 2); 
-				tab.(1) <- table.(t.(0) land 0b00000011 lsl 4 lor (t.(1) lsr 4)); 
-				tab.(2) <- table.(t.(1) land 0b00001111 lsl 2);
-				tab.(3) <- '=';
+				tab.(1) <- table.(((t.(0) land 0b11) lsl 4) lor (t.(1) lsr 4)); 
+				tab.(2) <- table.((t.(1) land 0b1111) lsl 2);
 				tab
 	|[|_; _; _|] -> tab.(0) <- table.(t.(0) lsr 2); 
-				tab.(1) <- table.((t.(0) land 0b00000011 lsl 4) lor (t.(1) lsr 4)); 
-				tab.(2) <- table.((t.(1) land 0b00001111 lsl 2) lor (t.(2) lsr 6));
-				tab.(3) <- table.(t.(2) land 0b00111111);
+				tab.(1) <- table.(((t.(0) land 0b11) lsl 4) lor (t.(1) lsr 4)); 
+				tab.(2) <- table.(((t.(1) land 0b1111) lsl 2) lor (t.(2) lsr 6));
+				tab.(3) <- table.(t.(2) land 0b111111);
 				tab
+	|_ -> tab
 
 let traiter_octets t =
-	let tab = octet_en_sextet t in
 	match t with
 	| [|-1; -1; -1|] -> Printf.printf ""
-	| [|_; _; _|] -> Printf.printf "%c%c%c%c" tab.(0) tab.(1) tab.(2) tab.(3)
+	| [|_; _; _|] -> 
+		let tab = octet_en_sextet t in
+		Printf.printf "%c%c%c%c" tab.(0) tab.(1) tab.(2) tab.(3); 
+		reinit_tab t
+	| _ -> Printf.printf "%s" "Mauvais argument"
 
 (** 	[encoder_base64 source] produit un codage en base 64 du fichier [source]. 
 	La sortie se fait sur la sortie standard. 
 *) 
 let encoder_base64 source = 
-	let entree = open_in_bin source 
-	and triplet_octets = Array.make 3 (-1) in 
+	let entree = open_in_bin source
+	and triplet_octets = Array.make 3 (-1) in
 	try 
 		while true do 
 			triplet_octets.(0) <- input_byte entree ; 
