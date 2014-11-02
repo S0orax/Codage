@@ -103,7 +103,14 @@ let codage3 = creer alphabet_source code3
 *)
 
 (* Question 8 *)
-
+(*
+	code_mot_aux s c_code s_aux : string -> char Codage.codage -> string -> string
+	Fonction recursive qui code une chaine de caractere
+	parametres :
+		s : Chaine de caractere a coder
+		c_code : codage utilise
+		s_aux : chaine de caractere auxiliaire
+*)
 let rec code_mot_aux s c_code s_aux =
 	let s_result = ref s_aux
 	and n = String.length s in
@@ -114,7 +121,12 @@ let rec code_mot_aux s c_code s_aux =
 		s_result := !s_result ^ code s.[0] c_code;
 		code_mot_aux (String.sub s 1 (n - 1)) c_code !s_result
 	end;;
-	
+
+(*
+	code_mot s c_code : string -> char Codage.codage -> string
+	utilise la fonction recursive ci-dessus en initilisant la chaine de caractere
+	auxiliaire en chaine vide
+*)
 let code_mot s c_code =
 	try
 		code_mot_aux s c_code ""
@@ -140,6 +152,13 @@ let code_mot s c_code =
 
 (* Question 11 *)
 
+(*
+	decode_mot_longueur_fixe : string -> char Codage.codage -> string
+	Decode la chaine de caractere par rapport au codage ici de longueur fixe)
+	parametres :
+		s : Chaine de caractere a decoder
+		codage : le codage dans lequel la chaine est codee
+*)
 let decode_mot_longueur_fixe s codage =
 	let nCodage = String.length (code 'A' codage)
 	and nS = String.length s in
@@ -203,7 +222,14 @@ let decode_mot_longueur_fixe s codage =
 *)
 
 (* Question 15 *)
-
+(*
+	decode_mot_virgule : string -> char Codage.codage -> string -> string
+	Decode la chaine de caractere par rapport au codage ici a virgule)
+	parametres :
+		s : Chaine de caractere a decoder
+		codage : le codage dans lequel la chaine est codee
+		s_aux : chine de caractere auxiliaire
+*)
 let rec decode_mot_virgule_aux s codage c s_aux =
 	let nS = String.length s in
 	if nS = 0 then
@@ -224,6 +250,15 @@ let rec decode_mot_virgule_aux s codage c s_aux =
 		| Not_found -> failwith "decode_mot_virgule : mot non decodable"
 	end
 
+(*
+	decode_mot_virgule : string -> char Codage.codage -> string
+	Decode la chaine de caractere par rapport au codage ici a virgule)
+	Utilise la fonction recursie ci-dessus en initialisant la chaine auxiliaire
+	a la chaine vide
+	parametres :
+		s : Chaine de caractere a decoder
+		codage : le codage dans lequel la chaine est codee
+*)
 let decode_mot_virgule s codage c =
 	decode_mot_virgule_aux s codage c ""
 	
@@ -287,6 +322,14 @@ let decode_lettre_prefixe v codage =
 
 (* Question 19 *)
 
+(*
+	decode_mot_prefixe : string -> char Codage.codage -> string ->
+	Decode la chaine de caractere par rapport au codage ici prefixe)
+	parametres :
+		s : Chaine de caractere a decoder
+		codage : le codage dans lequel la chaine est codee
+		s_aux : chaine de caractere auxiliaire
+*)
 let rec decode_mot_prefixe_aux s codage s_aux =
 	let nS = String.length s in
 	if nS = 0 then
@@ -303,6 +346,15 @@ let rec decode_mot_prefixe_aux s codage s_aux =
 		decode_mot_prefixe_aux sufixe codage ss
 	end
 
+(*
+	decode_mot_prefixe : string -> char Codage.codage -> string
+	Decode la chaine de caractere par rapport au codage ici prefixe)
+	Utilise la fonction recursie ci-dessus en initialisant la chaine auxiliaire
+	a la chaine vide
+	parametres :
+		s : Chaine de caractere a decoder
+		codage : le codage dans lequel la chaine est codee
+*)
 let decode_mot_prefixe s codage =
 	decode_mot_prefixe_aux s codage ""
 	
